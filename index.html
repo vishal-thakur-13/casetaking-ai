@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaseTaking AI — Patient Case-Taking System</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+ 
+<!-- ============ TOP NAVBAR ============ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21C12 21 4 15.87 4 10.5C4 7.46 6.24 5 9 5C10.54 5 11.94 5.79 12.8 7.03C13.66 5.79 15.06 5 16.6 5C19.36 5 21.6 7.46 21.6 10.5C21.6 12.6 20.3 14.66 18.5 16.4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 12H6L7.5 9L9.5 15L11 12H14" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">CaseTaking AI</span>
+      <span class="brand-sub">SMART INDIA HACKATHON</span>
+    </div>
+  </div>
+ 
+  <nav class="step-nav" id="stepNav">
+    <!-- populated by JS -->
+  </nav>
+ 
+  <div class="topbar-right">
+    <span class="physician-badge" id="physicianBadge" hidden>Physician Mode</span>
+    <div class="avatar-btn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="8" r="3.2" stroke="#94a3b8" stroke-width="1.6"/>
+        <path d="M4.5 20c1.5-3.6 4.6-5.5 7.5-5.5s6 1.9 7.5 5.5" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</header>
+ 
+<main class="app-main">
+ 
+  <!-- ============ SCREEN 1: LANDING ============ -->
+  <section class="screen" id="screen-landing">
+    <div class="landing-wrap">
+      <div class="eyebrow-pill">
+        <span class="dot"></span> Smart India Hackathon 2024 · AIIMS Collaboration
+      </div>
+ 
+      <div class="hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21C12 21 4 15.87 4 10.5C4 7.46 6.24 5 9 5C10.54 5 11.94 5.79 12.8 7.03C13.66 5.79 15.06 5 16.6 5C19.36 5 21.6 7.46 21.6 10.5C21.6 12.6 20.3 14.66 18.5 16.4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 12H6L7.5 9L9.5 15L11 12H14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+ 
+      <h1 class="hero-title">Patient<br><span class="accent">Case-Taking</span><br>System</h1>
+ 
+      <p class="hero-desc">A smarter way to prepare medical history before consultation — saving physician time and improving care quality.</p>
+ 
+      <button class="btn btn-primary btn-lg" id="startBtn">
+        Start Case Taking
+        <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+ 
+      <div class="feature-cards">
+        <div class="feature-card">
+          <div class="feature-icon blue">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2563eb" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18" stroke="#2563eb" stroke-width="1.6"/></svg>
+          </div>
+          <div class="feature-title">AI-Powered Interview</div>
+          <div class="feature-sub">Guided by <a href="#">clinical protocols</a></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon blue">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="feature-title">Secure &amp; Private</div>
+          <div class="feature-sub">DPDPA 2023 compliant</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon blue">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2563eb" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <div class="feature-title">5-7 Minutes</div>
+          <div class="feature-sub">Before your consultation</div>
+        </div>
+      </div>
+ 
+      <p class="landing-footer">Ministry of Health &amp; Family Welfare · Government of India</p>
+    </div>
+  </section>
+ 
+<!-- ============ SCREEN 2: CONSENT FORM ============ -->
+  <section class="screen" id="screen-consent">
+    <div class="step-wrap">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:16.6%"></div></div>
+      </div>
+      <div class="step-meta">
+        <span>Step 1 of 6</span>
+        <span class="step-meta-title">Consent</span>
+      </div>
+ 
+      <h2 class="step-heading">Consent Form</h2>
+      <p class="step-subheading">Please review the terms and provide consent before beginning your consultation preparation.</p>
+ 
+      <div class="card consent-card">
+        <div class="consent-head">
+          <span class="consent-icon">ⓘ</span>
+          <span>Informed Consent</span>
+        </div>
+        <ul class="consent-list">
+          <li><span class="tick">✓</span> Your health information will be collected via AI-guided interview</li>
+          <li><span class="tick">✓</span> Data is encrypted and shared only with your assigned physician</li>
+          <li><span class="tick">✓</span> You may withdraw consent at any time during the session</li>
+          <li><span class="tick">✓</span> AI-generated summaries are verified by your doctor before use</li>
+          <li><span class="tick amber">✓</span> This system complies with the Digital Personal Data Protection Act, 2023</li>
+        </ul>
+        <hr class="divider">
+        <label class="checkbox-row">
+          <input type="checkbox" id="consentCheck">
+          <span>I have read and agree to the consent terms. I voluntarily provide my health information for pre-consultation preparation.</span>
+        </label>
+      </div>
+ 
+      <button class="btn btn-primary btn-block" id="consentContinueBtn" disabled>Continue →</button>
+      <p class="helper-text" id="consentHelper">Please accept the consent to proceed</p>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3: PATIENT INFORMATION ============ -->
+  <section class="screen" id="screen-patient">
+    <div class="step-wrap">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:33.3%"></div></div>
+      </div>
+      <div class="step-meta">
+        <span>Step 2 of 6</span>
+        <span class="step-meta-title">Patient Information</span>
+      </div>
+ 
+      <h2 class="step-heading">Patient Information</h2>
+      <p class="step-subheading">Please provide your basic details for the medical record.</p>
+ 
+      <div class="card">
+        <div class="form-grid-2">
+          <div class="field">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" id="patientFullName" placeholder="Rajesh Kumar">
+          </div>
+          <div class="field">
+            <label>Age <span class="req">*</span></label>
+            <input type="number" id="patientAge" placeholder="42">
+          </div>
+        </div>
+ 
+        <div class="field">
+          <label>Gender <span class="req">*</span></label>
+          <div class="segmented" id="genderSeg">
+            <button type="button" class="seg-btn selected" data-gender="Male">Male</button>
+            <button type="button" class="seg-btn" data-gender="Female">Female</button>
+            <button type="button" class="seg-btn" data-gender="Other">Other</button>
+          </div>
+          <input type="hidden" id="patientGender" value="Male">
+        </div>
+ 
+        <div class="field">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="text" id="patientPhone" placeholder="+91 98765 43210">
+        </div>
+ 
+        <div class="field">
+          <label>Date of Birth</label>
+          <input type="text" id="patientDob" placeholder="dd-mm-yyyy">
+        </div>
+ 
+        <hr class="divider">
+        <div class="section-label">
+          <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .5 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.5-1 1-1h3.5c.5 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z" stroke="#64748b" stroke-width="1.4"/></svg>
+          Emergency Contact <span class="optional">(optional)</span>
+        </div>
+ 
+        <div class="form-grid-2">
+          <div class="field">
+            <label>Contact Name</label>
+            <input type="text" id="patientEmergencyName" placeholder="Priya Kumar">
+          </div>
+          <div class="field">
+            <label>Relationship</label>
+            <input type="text" id="patientEmergencyRelation" placeholder="Spouse">
+          </div>
+        </div>
+ 
+        <div class="field">
+          <label>Emergency Phone</label>
+          <input type="text" id="patientEmergencyPhone" placeholder="+91 98765 43211">
+        </div>
+      </div>
+ 
+      <div class="notice-box">
+        <span>ⓘ</span> Fields marked * are required. All information is encrypted end-to-end and accessible only to your assigned physician.
+      </div>
+ 
+      <button class="btn btn-primary btn-block" id="patientContinueBtn">Continue →</button>
+    </div>
+  </section>
+ 
+  <!-- ============ SCREEN 4: AI HEALTH INTERVIEW ============ -->
+  <section class="screen" id="screen-interview">
+    <div class="step-wrap wide">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+      </div>
+      <div class="step-meta">
+        <span>Step 3 of 6</span>
+        <span class="step-meta-title">AI Health Interview</span>
+      </div>
+ 
+      <div class="chat-card">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-avatar">
+              <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 21C12 21 4 15.87 4 10.5C4 7.46 6.24 5 9 5C10.54 5 11.94 5.79 12.8 7.03C13.66 5.79 15.06 5 16.6 5C19.36 5 21.6 7.46 21.6 10.5C21.6 12.6 20.3 14.66 18.5 16.4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="chat-title">AI Health Assistant</div>
+              <div class="chat-status"><span class="live-dot"></span> Active · Confidential session</div>
+            </div>
+          </div>
+          <span class="pill-warning">⚠ Not medical advice</span>
+        </div>
+ 
+        <div class="chat-body" id="chatBody">
+          <!-- messages injected by JS -->
+        </div>
+ 
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Type your response here...">
+          <button class="icon-btn" id="micBtn" title="Voice input">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><rect x="9" y="3" width="6" height="11" rx="3" stroke="#64748b" stroke-width="1.6"/><path d="M5 11a7 7 0 0014 0M12 18v3" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn primary" id="sendBtn" title="Send">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M4 12l16-7-6 16-3-7-7-2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+ 
+      <button class="btn btn-primary btn-block" id="finishInterviewBtn">Finish Interview →</button>
+    </div>
+  </section>
+ 
+  <!-- ============ SCREEN 5: MEDICAL DOCUMENT UPLOAD ============ -->
+  <section class="screen" id="screen-documents">
+    <div class="step-wrap">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:66.6%"></div></div>
+      </div>
+      <div class="step-meta">
+        <span>Step 4 of 6</span>
+        <span class="step-meta-title">Medical Document Upload</span>
+      </div>
+ 
+      <h2 class="step-heading">Upload Medical Records</h2>
+      <p class="step-subheading">Upload test reports, prescriptions, or scans (optional but recommended).</p>
+ 
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="dropzone-title">Drag &amp; drop files here</div>
+        <div class="dropzone-or">or</div>
+        <button class="btn btn-outline" id="browseBtn">Browse Files</button>
+        <input type="file" id="fileInput" multiple hidden accept=".pdf,.jpg,.jpeg,.png">
+        <div class="dropzone-hint">Supported: PDF, JPG, PNG · Max 10 MB per file</div>
+      </div>
+ 
+      <div class="uploaded-head">
+        <span>Uploaded Documents</span>
+        <span class="count-pill" id="fileCount">0 files</span>
+      </div>
+ 
+      <div class="uploaded-list" id="uploadedList">
+       <!-- populated by JS -->
+      </div>
+ 
+      <div class="notice-box success">
+        <span>ⓘ</span> Documents are processed with OCR and securely attached to your case record. Only your physician can access them.
+      </div>
+ 
+      <div class="btn-row">
+        <button class="btn btn-outline btn-block" id="skipDocsBtn">Skip for now</button>
+        <button class="btn btn-primary btn-block" id="docsContinueBtn">Continue →</button>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ============ SCREEN 6: SUMMARY REVIEW ============ -->
+  <section class="screen" id="screen-summary">
+    <div class="step-wrap">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:83.3%"></div></div>
+      </div>
+      <div class="step-meta">
+        <span>Step 5 of 6</span>
+        <span class="step-meta-title">Medical History Summary</span>
+      </div>
+ 
+      <h2 class="step-heading">Summary Review</h2>
+      <p class="step-subheading">Review your medical history summary before submission.</p>
+ 
+      <div class="notice-box warning">
+        <span>⚠</span>
+        <div>
+          <div class="notice-title">AI-Generated Draft — Requires Physician Review</div>
+          <div>This summary was auto-generated from your interview responses. Your doctor will verify all information before creating an official record.</div>
+        </div>
+      </div>
+ 
+      <div class="card patient-strip">
+        <div class="patient-strip-left">
+          <div class="patient-avatar-lg">
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="8" r="3.4" stroke="#64748b" stroke-width="1.6"/><path d="M4.5 20c1.5-3.6 4.6-5.5 7.5-5.5s6 1.9 7.5 5.5" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="patient-name" id="sumName">Rajesh Kumar</div>
+            <div class="patient-sub" id="sumMeta">42 years · Male · Case ID: PCT-2024-0847</div>
+          </div>
+        </div>
+        <div class="patient-strip-right">
+          <div class="label-sm">Submitted</div>
+          <div class="value-sm">24 Aug 2024</div>
+        </div>
+      </div>
+ 
+      <div class="summary-grid" id="summaryGrid">
+        <!-- populated by JS -->
+      </div>
+ 
+      <div class="btn-row">
+        <button class="btn btn-outline btn-block" id="editSummaryBtn">✎ Edit Summary</button>
+        <button class="btn btn-primary btn-block" id="submitPhysicianBtn">Submit to Physician →</button>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ============ SCREEN 7: PHYSICIAN REVIEW ============ -->
+  <section class="screen" id="screen-review">
+    <div class="step-wrap extra-wide">
+      <div class="review-topbar">
+        <div class="review-crumb">Physician Review Panel</div>
+        <div class="review-actions">
+          <button class="btn btn-outline btn-sm" id="exportPdfBtn">Export PDF</button>
+        </div>
+      </div>
+ 
+      <div class="review-heading-row">
+        <h2 class="step-heading">Patient Case Review</h2>
+        <span class="status-pill ready">● Ready for Review</span>
+      </div>
+ 
+      <div class="review-layout">
+        <!-- LEFT COLUMN -->
+        <div class="review-col-left">
+          <div class="card patient-card">
+            <div class="patient-avatar-lg center">
+              <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><circle cx="12" cy="8" r="3.4" stroke="#64748b" stroke-width="1.6"/><path d="M4.5 20c1.5-3.6 4.6-5.5 7.5-5.5s6 1.9 7.5 5.5" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="patient-name center" id="reviewName">Rajesh Kumar</div>
+            <div class="patient-sub center" id="reviewMeta">42 years · Male</div>
+            <div class="patient-sub center muted" id="reviewCaseId">PCT-2024-0847</div>
+ 
+            <hr class="divider">
+            <div class="info-row"><span>📞</span> <span id="reviewPhone">+91 98765 43210</span></div>
+            <div class="info-row"><span>🚨</span> <span id="reviewEmergency">Priya Kumar (Spouse)</span></div>
+            <div class="info-row"><span>📅</span> <span id="reviewDate">24 Aug 2024</span></div>
+            <div class="info-row"><span>🏥</span> <span>Department: General Medicine</span></div>
+            <div class="info-row"><span>👨‍⚕️</span> <span>Consulting Dr: Dr. Rao</span></div>
+          </div>
+ 
+          <div class="card allergy-card">
+            <div class="card-label danger">⚠ Drug Allergies</div>
+            <ul class="allergy-list" id="reviewAllergies">
+              <li>Not reported</li>
+            </ul>
+          </div>
+ 
+          <div class="card">
+            <div class="card-label">📎 Attached Reports</div>
+            <div id="reviewDocuments">
+              <div class="muted">No documents uploaded</div>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- RIGHT COLUMN -->
+        <div class="review-col-right">
+         <div class="card chief-complaint-card">
+            <div class="card-label">CHIEF COMPLAINT</div>
+            <div class="chief-complaint-text" id="reviewComplaint">Not reported</div>
+            <div class="chief-tags">
+              <div class="tag-item"><b>Duration</b><div id="reviewDuration">Not reported</div></div>
+              <div class="tag-item"><b>Severity</b><div id="reviewSeverity">Not reported</div></div>
+              <div class="tag-item"><b>Onset</b><div id="reviewOnset">Not reported</div></div>
+              <div class="tag-item"><b>Trigger</b><div id="reviewTrigger">Not reported</div></div>
+            </div>
+          </div>
+ 
+          <div class="two-col-cards">
+            <div class="card">
+              <div class="card-label">⚠ Presenting Symptoms</div>
+              <ul class="dot-list" id="reviewSymptoms">
+                <li>Not reported</li>
+              </ul>
+            </div>
+            <div class="card">
+              <div class="card-label">💊 Current Medications</div>
+              <div class="med-item" id="reviewMedications">
+                <span class="muted">Not reported</span>
+              </div>
+          </div>
+ 
+          <div class="two-col-cards">
+            <div class="card">
+              <div class="card-label">📋 Medical History</div>
+              <ul class="dot-list" id="reviewHistory">
+                <li>Not reported</li>
+              </ul>
+            </div>
+            <div class="card">
+              <div class="card-label">🕓 Previous Treatment</div>
+              <p class="prev-treatment-text" id="reviewPreviousTreatment">
+                Not reported</p>
+            </div>
+          </div>
+ 
+          <div class="card ai-summary-card">
+            <div class="card-label-row">
+              <span class="card-label">🤖 AI Clinical Summary</span>
+              <span class="pill-warning">Requires physician verification</span>
+            </div>
+<p class="ai-summary-text" id="reviewAISummary">
+  No clinical summary available.</p>
+            <div class="ai-summary-meta">Generated: 24 Aug 2024, 10:09 AM · Model: CaseTaking AI v2.1</div>
+          </div>
+ 
+          <div class="btn-row">
+            <button class="btn btn-outline btn-block" id="editReviewBtn">✎ Edit Summary</button>
+            <button class="btn btn-success btn-block" id="confirmSubmitBtn">✓ Confirm &amp; Submit Record</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+</main>
+ 
+<script src="script.js"></script>
+</body>
+</html>

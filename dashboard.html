@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaseTaking AI — Physician Portal</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">CT</div>
+      <div class="brand-text">
+        <div class="brand-name">CaseTaking AI</div>
+        <div class="brand-sub">Physician Portal</div>
+      </div>
+    </div>
+
+    <div class="menu-label">Menu</div>
+    <nav class="menu">
+      <button class="menu-item active" data-view="dashboard">
+        <span class="menu-icon">▦</span> Dashboard
+      </button>
+      <button class="menu-item" data-view="cases">
+        <span class="menu-icon">▤</span> Patient Cases
+      </button>
+      <button class="menu-item" data-view="documents">
+        <span class="menu-icon">▥</span> Documents
+      </button>
+      <button class="menu-item" data-view="reports">
+        <span class="menu-icon">▧</span> Reports
+      </button>
+      <button class="menu-item" data-view="settings">
+        <span class="menu-icon">⚙</span> Settings
+      </button>
+      <button class="menu-item" data-view="profile">
+        <span class="menu-icon">◍</span> Profile
+      </button>
+    </nav>
+
+    <button class="logout">↩ Logout</button>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+
+    <header class="topbar">
+      <div class="breadcrumb">
+        <span>Physician Dashboard</span>
+        <span class="crumb-sep">›</span>
+        <span id="crumbCurrent">Dashboard</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="search">
+          <span class="search-icon">⌕</span>
+          <input type="text" placeholder="Search cases, patient">
+        </div>
+        <button class="bell">🔔<span class="dot"></span></button>
+      </div>
+    </header>
+
+    <main class="content" id="content">
+
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <h1>Welcome back, Physician Dashboard!</h1>
+        <p class="subtext">Here's an overview of your patient cases today.</p>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">▤</div>
+            <div class="stat-value" id="statNew">—</div>
+            <div class="stat-label">New cases today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">⏱</div>
+            <div class="stat-value" id="statPending">—</div>
+            <div class="stat-label">Awaiting review</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div class="stat-value" id="statDone">—</div>
+            <div class="stat-label">Completed today</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent cases</h2>
+          </div>
+          <table class="table" id="dashboardTable"></table>
+        </div>
+      </section>
+
+      <!-- PATIENT CASES -->
+      <section class="view hidden" id="view-cases">
+        <h1>Patient Cases</h1>
+        <p class="subtext">Browse, search, and review patient case records.</p>
+
+        <div class="toolbar">
+          <div class="search wide">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="caseSearch" placeholder="Search by patient name or case ID...">
+          </div>
+          <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="In Review">In Review</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div class="panel">
+          <table class="table" id="casesTable"></table>
+        </div>
+      </section>
+
+      <!-- DOCUMENTS -->
+      <section class="view hidden" id="view-documents">
+        <div class="row-head">
+          <div>
+            <h1>Documents</h1>
+            <p class="subtext">Manage and review medical documents across all cases.</p>
+          </div>
+          <button class="btn-primary" id="uploadBtn">⭱ Upload Document</button>
+          <input type="file" id="fileInput" hidden>
+        </div>
+
+        <div class="panel">
+          <div class="empty" id="documentsEmpty">
+            <div class="empty-icon">▥</div>
+            <div class="empty-title">No documents available</div>
+            <div class="empty-text">Medical documents uploaded across patient cases will appear here.</div>
+          </div>
+          <table class="table hidden" id="documentsTable"></table>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="view hidden" id="view-reports">
+        <h1>Reports</h1>
+        <p class="subtext">Generate and download reports on case activity and review progress.</p>
+
+        <div class="stat-grid three">
+          <div class="stat-card">
+            <div class="stat-icon blue">↗</div>
+            <div class="stat-value">18</div>
+            <div class="stat-label">Cases reviewed per week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">⏱</div>
+            <div class="stat-value">6.4h</div>
+            <div class="stat-label">Time from intake to review</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div class="stat-value">92%</div>
+            <div class="stat-label">Cases fully completed</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Generated Reports</h2>
+            <button class="btn-primary small" id="generateReportBtn">+ Generate report</button>
+          </div>
+          <div class="empty" id="reportsEmpty">
+            <div class="empty-icon">▧</div>
+            <div class="empty-title">No reports generated yet</div>
+            <div class="empty-text">Generated reports will be listed here for download and review.</div>
+          </div>
+          <table class="table hidden" id="reportsTable"></table>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view hidden" id="view-settings">
+        <h1>Settings</h1>
+        <p class="subtext">Configure your physician portal preferences.</p>
+
+        <div class="settings-grid">
+          <div class="panel">
+            <div class="panel-head"><h2>🔔 Notifications</h2></div>
+            <div class="toggle-row">
+              <span>New case alerts</span>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>Review reminders</span>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>AI summary ready</span>
+              <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>🛡 Security</h2></div>
+            <div class="toggle-row">
+              <span>Two-factor authentication</span>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>Session timeout (30 min)</span>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>🌐 Localization</h2></div>
+            <label class="field-label">Display language</label>
+            <select class="field-select">
+              <option>English</option>
+              <option>Hindi</option>
+            </select>
+            <label class="field-label">Timezone</label>
+            <select class="field-select">
+              <option>UTC</option>
+              <option>Asia/Kolkata</option>
+            </select>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>▤ Data &amp; Privacy</h2></div>
+            <div class="toggle-row">
+              <span>Auto-archive completed cases</span>
+              <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>Share anonymized data for AI training</span>
+              <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section class="view hidden" id="view-profile">
+        <h1>Profile</h1>
+        <p class="subtext">View and manage your physician profile information.</p>
+
+        <div class="profile-grid">
+          <div class="panel profile-card">
+            <div class="avatar">◍</div>
+            <div class="profile-role" id="profRole">Physician</div>
+            <button class="btn-outline">✎ Edit Profile</button>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>◍ Personal Information</h2></div>
+            <div class="info-grid">
+              <div><span class="info-label">Full name</span><span class="info-value" id="pFullName">—</span></div>
+              <div><span class="info-label">Department</span><span class="info-value" id="pDept">—</span></div>
+              <div><span class="info-label">Email</span><span class="info-value" id="pEmail">—</span></div>
+              <div><span class="info-label">Specialization</span><span class="info-value" id="pSpec">—</span></div>
+              <div><span class="info-label">Phone</span><span class="info-value" id="pPhone">—</span></div>
+              <div><span class="info-label">Member since</span><span class="info-value" id="pSince">—</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>▥ Professional Details</h2></div>
+            <div class="info-grid">
+              <div><span class="info-label">Medical license</span><span class="info-value" id="pLicense">—</span></div>
+              <div><span class="info-label">Years of experience</span><span class="info-value" id="pYears">—</span></div>
+              <div><span class="info-label">Hospital / Clinic</span><span class="info-value" id="pHospital">—</span></div>
+              <div><span class="info-label">Board certification</span><span class="info-value" id="pBoard">—</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
