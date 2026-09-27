@@ -12,27 +12,39 @@ import pymupdf
 from google import genai
 
 # ============================================================
-# PATH CONFIGURATION
+# PATH CONFIGURATION (Dynamic for Local & Cloud / Railway)
 # ============================================================
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CURRENT_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+if os.path.exists(os.path.join(CURRENT_FILE_DIR, "frontend")):
+    BASE_DIR = CURRENT_FILE_DIR
+else:
+    BASE_DIR = os.path.dirname(CURRENT_FILE_DIR)
 
 CHATBOT_DIR = os.path.join(BASE_DIR, "chatbot")
 
 if CHATBOT_DIR not in sys.path:
     sys.path.insert(0, CHATBOT_DIR)
 
-from chatbot import (
-    get_first_question,
-    get_next_question
-)
+try:
+    from chatbot import (
+        get_first_question,
+        get_next_question
+    )
+except ImportError:
+    # Fallback agar chatbot module direct sys.path se load na ho
+    from chatbot.chatbot import (
+        get_first_question,
+        get_next_question
+    )
 
 # ============================================================
 # GEMINI CLIENT INITIALIZATION
 # ============================================================
 
 GEMINI_MODEL = "gemini-2.5-flash"
-gemini_client = genai.Client()
+api_key = os.environ.get("GEMINI_API_KEY")
+gemini_client = genai.Client(api_key=api_key) if api_key else None
 
 # ============================================================
 # FLASK SETUP
@@ -275,6 +287,9 @@ def generate_clinical_summary(answers, patient):
 
 
 def generate_final_summary(case_id):
+    if not gemini_client:
+        return "Summary unavailable: GEMINI_API_KEY is not configured."
+
     patient = get_patient(case_id)
     answers = get_interview_answers(case_id)
     documents = get_documents(case_id)
@@ -425,7 +440,6 @@ def physician_static(filename):
     return send_from_directory(os.path.join(BASE_DIR, "doctor_dashboard"), filename)
 
 
-# ROUTE TO SERVE UPLOADED FILES (Opens files in new tab)
 @app.route("/uploads/<case_id>/<path:filename>", methods=["GET"])
 def serve_uploaded_file(case_id, filename):
     folder = os.path.join(BASE_DIR, "uploads", case_id)
@@ -516,9 +530,8 @@ def interview_message(case_id):
     """, (case_id,)).fetchone()
     conn.close()
 
-    # --- SPECIAL CASE: Agar last step 'notes' me patient ne 'yes' kaha tha ---
+    # Agar last step 'notes' me patient ne 'yes' bola tha
     if last and last["answer_key"] == "notes" and last["answer"].lower().strip() in ["yes", "y", "haan", "ha"]:
-        # Jo ab message aaya hai, wahi asli additional note hai
         conn = get_db()
         conn.execute("""
             UPDATE interview SET answer = ? WHERE case_id = ? AND answer_key = 'notes'
@@ -550,7 +563,7 @@ def interview_message(case_id):
     conn.commit()
     conn.close()
 
-    # --- SPECIAL CASE: Notes par 'yes' bolne par details mango ---
+    # Notes condition
     if current_key == "notes":
         if is_no_answer(message):
             conn = get_db()
@@ -575,9 +588,8 @@ def interview_message(case_id):
 
     language = normalize_language(case["language"])
 
-    # Treatment = NO -> seedha medicines skip karke allergies (step 8) par jao
+    # Treatment = NO -> skip to allergies
     if current_key == "treatment" and is_no_answer(message):
-        # Auto-fill medicines as 'None' in db
         conn = get_db()
         conn.execute("""
             INSERT INTO interview (case_id, step, answer_key, answer, created_at)
@@ -617,42 +629,6 @@ def interview_message(case_id):
         })
 
     next_step = step + 1
-    return jsonify({
-        "status": "success",
-        "message": next_question,
-        "step": next_step,
-        "answer_key": current_key,
-        "next_answer_key": get_answer_key(next_step),
-        "finished": False
-    })
-
-# --------------------------------------------------------
-    # FINISHED OR CONDITIONAL FOLLOW-UP
-    # --------------------------------------------------------
-
-    # Agar aakhri sawaal (notes) par patient 'yes' bole, toh details pucho
-    if current_key == "notes" and not is_no_answer(message) and message.lower().strip() in ["yes", "y", "haan", "ha"]:
-        return jsonify({
-            "status": "success",
-            "message": "Please go ahead and share the details or any other concerns you would like the doctor to know.",
-            "step": step,
-            "answer_key": "notes_followup",
-            "finished": False
-        })
-
-    if next_question is None:
-        return jsonify({
-            "status": "success",
-            "message": "Thank you. I have collected enough information for your case summary.",
-            "step": step,
-            "answer_key": current_key,
-            "finished": True
-        })
-
-    next_step = step + 1
-    if current_key == "treatment" and is_no_answer(message):
-        next_step = 8
-
     return jsonify({
         "status": "success",
         "message": next_question,
@@ -844,7 +820,6 @@ def physician_cases():
     return jsonify({"status": "success", "cases": cases})
 
 
-# ALL DOCUMENTS ROUTE WITH FILE URLs
 @app.route("/api/physician/documents", methods=["GET"])
 def physician_all_documents():
     conn = get_db()
@@ -892,4 +867,5 @@ def confirm_case(case_id):
 # ============================================================
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
