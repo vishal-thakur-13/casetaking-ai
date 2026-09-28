@@ -12,15 +12,10 @@ import pymupdf
 from google import genai
 
 # ============================================================
-# PATH CONFIGURATION (Dynamic for Local & Cloud / Railway)
+# PATH CONFIGURATION (Root-level files configuration)
 # ============================================================
 
-CURRENT_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-if os.path.exists(os.path.join(CURRENT_FILE_DIR, "frontend")):
-    BASE_DIR = CURRENT_FILE_DIR
-else:
-    BASE_DIR = os.path.dirname(CURRENT_FILE_DIR)
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CHATBOT_DIR = os.path.join(BASE_DIR, "chatbot")
 
 if CHATBOT_DIR not in sys.path:
@@ -32,11 +27,13 @@ try:
         get_next_question
     )
 except ImportError:
-    # Fallback agar chatbot module direct sys.path se load na ho
-    from chatbot.chatbot import (
-        get_first_question,
-        get_next_question
-    )
+    try:
+        from chatbot.chatbot import (
+            get_first_question,
+            get_next_question
+        )
+    except ImportError:
+        pass
 
 # ============================================================
 # GEMINI CLIENT INITIALIZATION
@@ -47,12 +44,12 @@ api_key = os.environ.get("GEMINI_API_KEY")
 gemini_client = genai.Client(api_key=api_key) if api_key else None
 
 # ============================================================
-# FLASK SETUP
+# FLASK SETUP (Serving from BASE_DIR where HTML/CSS/JS exist)
 # ============================================================
 
 app = Flask(
     __name__,
-    static_folder=os.path.join(BASE_DIR, "frontend"),
+    static_folder=BASE_DIR,
     static_url_path=""
 )
 
@@ -422,22 +419,22 @@ def build_summary(case_id):
     }
 
 # ============================================================
-# API ROUTES
+# API & STATIC FILE ROUTES
 # ============================================================
 
 @app.route("/", methods=["GET"])
 def home():
-    return send_from_directory(os.path.join(BASE_DIR, "frontend"), "index.html")
+    return send_from_directory(BASE_DIR, "index.html")
 
 
 @app.route("/physician/")
 def physician_dashboard():
-    return send_from_directory(os.path.join(BASE_DIR, "doctor_dashboard"), "dashboard.html")
+    return send_from_directory(BASE_DIR, "dashboard.html")
 
 
 @app.route("/physician/<path:filename>")
 def physician_static(filename):
-    return send_from_directory(os.path.join(BASE_DIR, "doctor_dashboard"), filename)
+    return send_from_directory(BASE_DIR, filename)
 
 
 @app.route("/uploads/<case_id>/<path:filename>", methods=["GET"])
@@ -547,14 +544,12 @@ def interview_message(case_id):
             "finished": True
         })
 
-    # Normal step tracking
     step = 0 if last is None else int(last["step"]) + 1
     current_key = get_answer_key(step)
 
     if current_key is None:
         return jsonify({"status": "success", "message": "Interview already completed.", "finished": True})
 
-    # Save current answer
     conn = get_db()
     conn.execute("""
         INSERT INTO interview (case_id, step, answer_key, answer, created_at)
@@ -563,7 +558,6 @@ def interview_message(case_id):
     conn.commit()
     conn.close()
 
-    # Notes condition
     if current_key == "notes":
         if is_no_answer(message):
             conn = get_db()
@@ -588,7 +582,6 @@ def interview_message(case_id):
 
     language = normalize_language(case["language"])
 
-    # Treatment = NO -> skip to allergies
     if current_key == "treatment" and is_no_answer(message):
         conn = get_db()
         conn.execute("""
@@ -612,7 +605,6 @@ def interview_message(case_id):
             "finished": False
         })
 
-    # Normal Question Fetch
     try:
         next_question = get_next_question(language, step, message)
     except Exception as error:
