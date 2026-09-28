@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose port and run with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"]
+CMD sh -c "gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 120 app:app"
