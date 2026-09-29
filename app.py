@@ -427,12 +427,13 @@ def home():
     return send_from_directory(BASE_DIR, "index.html")
 
 
-@app.route("/physician/")
+@app.route("/physician/", methods=["GET"])
+@app.route("/physician", methods=["GET"])
 def physician_dashboard():
     return send_from_directory(BASE_DIR, "dashboard.html")
 
 
-@app.route("/physician/<path:filename>")
+@app.route("/physician/<path:filename>", methods=["GET"])
 def physician_static(filename):
     return send_from_directory(BASE_DIR, filename)
 
@@ -527,7 +528,6 @@ def interview_message(case_id):
     """, (case_id,)).fetchone()
     conn.close()
 
-    # Agar last step 'notes' me patient ne 'yes' bola tha
     if last and last["answer_key"] == "notes" and last["answer"].lower().strip() in ["yes", "y", "haan", "ha"]:
         conn = get_db()
         conn.execute("""
@@ -853,6 +853,18 @@ def confirm_case(case_id):
     conn.close()
 
     return jsonify({"status": "success", "message": "Record confirmed and submitted."})
+
+
+# ============================================================
+# CATCH-ALL ROUTE (Serves index.html, styles.css, script.js, etc.)
+# ============================================================
+
+@app.route("/<path:filename>", methods=["GET"])
+def serve_root_files(filename):
+    file_path = os.path.join(BASE_DIR, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(BASE_DIR, filename)
+    return "Not Found", 404
 
 # ============================================================
 # RUN
