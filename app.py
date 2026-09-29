@@ -418,6 +418,16 @@ def build_summary(case_id):
         ]
     }
 
+@app.route("/debug-files", methods=["GET"])
+def debug_files():
+    import os
+    files = os.listdir(BASE_DIR)
+    return jsonify({
+        "BASE_DIR": BASE_DIR,
+        "files_in_base_dir": files,
+        "index_exists": os.path.exists(os.path.join(BASE_DIR, "index.html"))
+    })
+
 # ============================================================
 # API & STATIC FILE ROUTES
 # ============================================================
